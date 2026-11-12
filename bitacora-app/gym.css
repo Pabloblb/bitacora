@@ -1,0 +1,172 @@
+.gym{--bg:#F4F5F6; --surface:#FFFFFF; --surface-2:#E9ECEE; --ink:#181C20; --ink-muted:#5C6570; --border:#DEE2E6;
+    --accent:#D14D2E; --accent-soft:#FBE3DA; --strength:#2C4A6E; --strength-soft:#E1E9F1;
+    --swim:#1F7A8C; --swim-soft:#DCEEF1; --futbol:#6B8E23; --futbol-soft:#EAF1DA;
+    --done:#3C7A52; --done-soft:#DCEEE0; --danger:#AA4527; --on-strong:#FFFFFF;
+    --shadow:0 1px 2px rgba(24,28,32,.06),0 6px 16px -8px rgba(24,28,32,.12);
+    --nav-h:var(--host-nav-h,0px);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gym{--bg:#121416; --surface:#1A1D20; --surface-2:#24282B; --ink:#ECEEEF; --ink-muted:#93999E; --border:#2C3134;
+    --accent:#E67A57; --accent-soft:#3A241C; --strength:#7FA5D1; --strength-soft:#1E2C3C;
+    --swim:#5FC3D6; --swim-soft:#173036; --futbol:#A8C868; --futbol-soft:#26301A;
+    --done:#7ECB98; --done-soft:#1C3324; --danger:#E0906F; --on-strong:#121416;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5); color-scheme:dark;}}
+:root[data-theme="dark"] .gym{--bg:#121416; --surface:#1A1D20; --surface-2:#24282B; --ink:#ECEEEF; --ink-muted:#93999E; --border:#2C3134;
+    --accent:#E67A57; --accent-soft:#3A241C; --strength:#7FA5D1; --strength-soft:#1E2C3C;
+    --swim:#5FC3D6; --swim-soft:#173036; --futbol:#A8C868; --futbol-soft:#26301A;
+    --done:#7ECB98; --done-soft:#1C3324; --danger:#E0906F; --on-strong:#121416;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5); color-scheme:dark;}
+.gym,.gym *{box-sizing:border-box}
+.gym .mono,.gym .num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.gym button{font:inherit;color:inherit;touch-action:manipulation}
+.gym input,.gym select{font:inherit;font-size:16px;color:var(--ink)}
+.gym button:focus-visible,.gym input:focus-visible,.gym select:focus-visible,.gym [data-sel]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gym .rest{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:19;display:flex;justify-content:center;padding:0 10px 8px}
+.gym .rest .box{width:100%;max-width:700px;background:var(--ink);color:var(--surface);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.gym .rest .t{font-family:"IBM Plex Mono",monospace;font-size:1.6rem;font-weight:600;min-width:4.2ch}
+.gym .rest .lbl{flex:1;min-width:0;font-size:.78rem;line-height:1.3;opacity:.85}
+.gym .rest .lbl b{display:block;font-size:.85rem;opacity:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gym .rest button{border:0;border-radius:10px;min-height:44px;padding:0 12px;font-weight:600;font-size:.85rem;background:rgba(127,127,127,.28);color:inherit;cursor:pointer}
+.gym .rest .pbar{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);transition:width .25s linear}
+.gym .rest .box.end{background:var(--done);color:var(--on-strong)}
+.gym .toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--surface);
+    padding:10px 16px;border-radius:999px;font-size:.85rem;font-weight:600;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.gym .empty{color:var(--ink-muted);font-size:.85rem;padding:18px 10px;border:1px dashed var(--border);border-radius:12px;text-align:center}
+.gym .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.gym .card h3{font-size:.8rem;margin:0 0 10px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.gym .day-chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:0 16px 2px;scrollbar-width:none}
+.gym .day-chips button{flex:none;border:1px solid var(--border);background:var(--surface);border-radius:999px;min-height:40px;padding:0 14px;font-size:.82rem;font-weight:600;cursor:pointer}
+.gym .day-chips button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.gym .hoy-head h2{margin:0;font-size:1.35rem;line-height:1.2;text-wrap:balance}
+.gym .hoy-head .f{font-size:.8rem;color:var(--ink-muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.gym .linkish{border:0;background:none;color:var(--accent);font-weight:600;font-size:.8rem;padding:6px 0;cursor:pointer}
+.gym .move{display:flex;gap:8px;align-items:center;margin-top:8px}
+.gym .move input{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2)}
+.gym .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.gym .seg{display:inline-flex;background:var(--surface-2);border-radius:10px;padding:3px;gap:2px}
+.gym .seg button{border:0;background:transparent;border-radius:8px;min-height:36px;padding:0 10px;font-size:.8rem;font-weight:600;color:var(--ink-muted);cursor:pointer}
+.gym .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.gym .seg-l{font-size:.72rem;color:var(--ink-muted);margin-right:2px}
+.gym .now{background:var(--strength);color:var(--on-strong);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.gym .now.run{background:var(--accent)}
+.gym .now.fin{background:var(--done)}
+.gym .now .a{font-size:1.15rem;font-weight:700;line-height:1.25}
+.gym .now .b{font-size:.85rem;opacity:.9;margin-top:4px}
+.gym .ej{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.gym .ej.cur{border:2px solid var(--strength)}
+.gym .ej.ok .ej-head{opacity:.6}
+.gym .ej-head{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:13px 14px;cursor:pointer;min-height:56px}
+.gym .ej-head .nm{flex:1;min-width:0}
+.gym .ej-n{font-weight:600;font-size:.98rem;display:block}
+.gym .ej-o{font-size:.78rem;color:var(--ink-muted)}
+.gym .cnt{font-family:"IBM Plex Mono",monospace;font-size:.85rem;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--surface-2);flex:none}
+.gym .ej.ok .cnt{background:var(--done-soft);color:var(--done)}
+.gym .ej-body{padding:0 14px 14px}
+.gym .last{font-size:.8rem;color:var(--ink-muted);margin-bottom:8px}
+.gym .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.gym .chip{font-family:"IBM Plex Mono",monospace;font-size:.82rem;background:var(--strength-soft);color:var(--strength);border-radius:8px;padding:2px 2px 2px 10px;display:inline-flex;align-items:center}
+.gym .chip button{border:0;background:transparent;color:inherit;cursor:pointer;font-size:1.05rem;min-width:34px;min-height:34px}
+.gym .steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gym .steps.one{grid-template-columns:1fr}
+.gym .step label{display:block;font-size:.72rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.gym .stepper{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.gym .stepper button{border:0;background:transparent;width:46px;min-height:50px;font-size:1.35rem;font-weight:600;cursor:pointer;flex:none}
+.gym .stepper button:active{background:var(--border)}
+.gym .stepper input{flex:1;min-width:0;width:100%;border:0;background:transparent;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:1.15rem;font-weight:600;padding:0}
+.gym .rir{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.gym .rir span{font-size:.72rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+.gym .rir button{border:1px solid var(--border);background:var(--surface);border-radius:9px;min-width:42px;min-height:40px;font-family:"IBM Plex Mono",monospace;font-weight:600;cursor:pointer}
+.gym .rir button.on{background:var(--strength);color:var(--on-strong);border-color:var(--strength)}
+.gym .btn{border:0;border-radius:12px;min-height:50px;padding:0 16px;font-weight:600;font-size:.95rem;cursor:pointer;background:var(--ink);color:var(--surface)}
+.gym .btn.full{width:100%;margin-top:12px}
+.gym .btn.done{background:var(--done);color:var(--on-strong)}
+.gym .btn.sec{background:var(--surface-2);color:var(--ink)}
+.gym .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+.gym .contenido{margin:0;padding-left:18px;font-size:.88rem;line-height:1.6}
+.gym .field label{display:block;font-size:.72rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.gym .field input,.gym .field select,.gym .field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);font:inherit;font-size:16px;color:var(--ink)}
+.gym .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gym .ritmo{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:600;margin-top:12px}
+.gym .next{margin-top:20px}
+.gym .next h3{font-size:.8rem;margin:0 0 6px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.gym .nx{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.9rem;padding:12px 2px;border-bottom:1px solid var(--border);cursor:pointer;min-height:48px}
+.gym .nx .d{color:var(--ink-muted);white-space:nowrap;font-size:.8rem}
+.gym .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:1px;flex:none}
+.gym .miss{font-size:.72rem;color:var(--danger);font-weight:600;margin-left:6px}
+.gym .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.gym .cal-head h2{margin:0;font-size:1.1rem}
+.gym .cal-head .nav{display:flex;gap:6px}
+.gym .cal-head .nav button{border:1px solid var(--border);background:var(--surface);border-radius:10px;min-width:44px;min-height:44px;font-size:1.1rem;cursor:pointer}
+.gym .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.gym .cal .dow{font-size:.68rem;color:var(--ink-muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;padding-bottom:4px}
+.gym .cal .c{aspect-ratio:1/1.08;max-width:100%;border:1px solid transparent;border-radius:10px;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:5px;cursor:pointer;min-width:0}
+.gym .cal .c.out{background:transparent;opacity:.35}
+.gym .cal .c .n{font-family:"IBM Plex Mono",monospace;font-size:.85rem;font-weight:500}
+.gym .cal .c.today{border-color:var(--accent)}
+.gym .cal .c.today .n{color:var(--accent);font-weight:700}
+.gym .cal .c.sel{background:var(--ink);color:var(--surface)}
+.gym .cal .ds{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;padding:0 2px}
+.gym .cal .ds i{width:7px;height:7px;border-radius:50%;display:block}
+.gym .cal .ds i.p{background:transparent!important;border:1.5px solid currentColor}
+.gym .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.74rem;color:var(--ink-muted);margin:12px 0 4px}
+.gym .day-list{margin-top:14px}
+.gym .ses{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--c);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;min-height:58px}
+.gym .ses .bd{flex:1;min-width:0}
+.gym .ses .tt{font-weight:600;font-size:.95rem}
+.gym .ses .ff{font-size:.78rem;color:var(--ink-muted)}
+.gym .ses .st{font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--surface-2);white-space:nowrap}
+.gym .ses .st.ok{background:var(--done-soft);color:var(--done)}
+.gym .ses .st.ko{color:var(--danger)}
+.gym .tipos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.gym .tipos button{border:1px solid var(--border);background:var(--surface);border-radius:12px;min-height:46px;font-weight:600;font-size:.88rem;cursor:pointer}
+.gym .tipos button.on{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.gym .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.gym .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.gym .stat .n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:1.2rem;font-weight:600;line-height:1.1}
+.gym .stat .l{font-size:.66rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.gym .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin:4px 0 18px}
+.gym .bar-fill{height:100%;background:var(--accent);border-radius:999px}
+.gym .week{margin-bottom:18px}
+.gym .week h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);margin:0 0 8px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.gym .week h2 .rango{font-family:"IBM Plex Mono",monospace;font-size:.7rem;text-transform:none;letter-spacing:0}
+.gym .week h2 .tag{font-size:.66rem;padding:1px 7px;border-radius:999px;background:var(--surface-2);text-transform:none;letter-spacing:0}
+.gym .sesion{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--c,var(--border));border-radius:12px;padding:12px;margin-bottom:8px}
+.gym .sesion.done .titulo{text-decoration:line-through;opacity:.6}
+.gym .sesion.hoy{outline:2px solid var(--accent);outline-offset:-1px}
+.gym .sesion-top{display:flex;align-items:flex-start;gap:12px}
+.gym .check{appearance:none;-webkit-appearance:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--border);flex-shrink:0;cursor:pointer;background:var(--surface);position:relative;margin:0}
+.gym .check:checked{background:var(--done);border-color:var(--done)}
+.gym .check:checked::after{content:"";position:absolute;left:8px;top:3px;width:6px;height:12px;border:solid var(--on-strong);border-width:0 2.5px 2.5px 0;transform:rotate(40deg)}
+.gym .sesion .body{flex:1;min-width:0}
+.gym .sesion .fecha{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em}
+.gym .sesion .titulo{font-size:.95rem;font-weight:600}
+.gym .sesion .foco{font-size:.8rem;color:var(--ink-muted)}
+.gym .sesion details{margin-top:6px}
+.gym .sesion summary{font-size:.8rem;color:var(--ink-muted);cursor:pointer;padding:6px 0;list-style-position:inside}
+.gym .sesion .contenido{font-size:.83rem}
+.gym .row-act{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.gym .pill{display:inline-block;font-size:.64rem;font-weight:600;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+.gym .pill.fuerza{background:var(--strength-soft);color:var(--strength)}
+.gym .pill.running{background:var(--accent-soft);color:var(--accent)}
+.gym .pill.natacion{background:var(--swim-soft);color:var(--swim)}
+.gym .pill.futbol{background:var(--futbol-soft);color:var(--futbol)}
+.gym .pill.otro{background:var(--surface-2);color:var(--ink-muted)}
+.gym .reg{border:1px solid var(--border);background:var(--surface-2);border-radius:9px;min-height:36px;padding:0 12px;font-size:.78rem;font-weight:600;cursor:pointer}
+.gym .nota{width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2)}
+.gym .kv{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-muted);margin-top:6px}
+.gym .kv b{color:var(--ink);font-family:"IBM Plex Mono",monospace}
+.gym .card select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);margin-bottom:10px}
+.gym .chart{width:100%;overflow-x:auto}
+.gym .chart svg{display:block;width:100%;min-width:300px;height:auto}
+.gym footer{margin-top:24px;font-size:.74rem;color:var(--ink-muted);line-height:1.5}
+@media (max-width:520px){.gym .stats{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.gym *{transition:none!important}}
+
+.gym .g-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.gym .g-top .seg{flex:1 1 auto;min-width:0;overflow-x:auto}
+.gym .g-top .seg button{flex:1 0 auto}
+.gym .icon-btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:999px;min-height:40px;padding:0 12px;font-size:.78rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.gym .icon-btn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.gym{color:var(--ink);font-family:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;font-size:15px}
+.gym button{font:inherit;color:inherit;touch-action:manipulation}
+.gym input,.gym select{font:inherit;font-size:16px;color:var(--ink)}
+.gym button:focus-visible,.gym input:focus-visible,.gym select:focus-visible,.gym [data-sel]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gym-fx .toast{top:calc(12px + env(safe-area-inset-top,0px))}
