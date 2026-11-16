@@ -175,3 +175,14 @@
 .gym .rir.req button{border-color:var(--strength)}
 .gym .rir.shake{animation:rirshake .4s}
 @keyframes rirshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.gym .hold{margin-top:12px;border-radius:14px;padding:14px;background:var(--strength);color:var(--on-strong);text-align:center}
+.gym .hold.prep{background:var(--ink);color:var(--surface)}
+.gym .hold-l{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;opacity:.9}
+.gym .hold-t{font-family:"IBM Plex Mono",monospace;font-size:3.4rem;font-weight:600;line-height:1.1;margin:4px 0 8px}
+.gym .hold-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.gym .hold-bar i{display:block;height:100%;width:0;background:currentColor;transition:width .2s linear}
+.gym .hold-act{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:12px}
+.gym .hold-act .btn{min-height:46px}
+.gym .hold .btn:not(.sec){background:var(--surface);color:var(--ink)}
+.gym .btn.hold-go{background:var(--strength);color:var(--on-strong)}
