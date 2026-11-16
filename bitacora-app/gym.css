@@ -170,3 +170,8 @@
 .gym input,.gym select{font:inherit;font-size:16px;color:var(--ink)}
 .gym button:focus-visible,.gym input:focus-visible,.gym select:focus-visible,.gym [data-sel]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .gym-fx .toast{top:calc(12px + env(safe-area-inset-top,0px))}
+
+.gym .rir.req span{color:var(--strength);font-weight:600}
+.gym .rir.req button{border-color:var(--strength)}
+.gym .rir.shake{animation:rirshake .4s}
+@keyframes rirshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}

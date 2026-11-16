@@ -35,7 +35,7 @@ window.GymModule={mount:function(root,opts){
   function isExtra(d){ return !!d.extra || d.tipo==='natacion' || d.tipo==='futbol' || d.tipo==='otro' || d.semana===0; }
   function sorted(){ return data.slice().sort(function(a,b){ return a.fecha<b.fecha?-1:a.fecha>b.fecha?1:(a.orden||0)-(b.orden||0); }); }
   function byId(id){ for(var i=0;i<data.length;i++) if(data[i].id===id) return data[i]; return null; }
-  function serieTxt(s,u){ if(u==='s') return s.reps+'s'; if(u==='reps') return s.reps+' reps'; return fk(s.kg)+'×'+s.reps+(s.rir!=null&&s.rir!==''?' @'+s.rir:''); }
+  function serieTxt(s,u){ if(u==='s') return s.reps+'s'; var rr=(s.rir!=null&&s.rir!==''?' @'+s.rir:''); if(u==='reps') return s.reps+' reps'+rr; return fk(s.kg)+'×'+s.reps+rr; }
   function objReps(o){ var m=/×\s*(\d+)/.exec(o||''); return m?m[1]:''; }
   function objKg(o){ var m=/(\d+(?:[.,]\d+)?)\s*kg/i.exec(o||''); return m?num(m[1]):null; }
 
@@ -110,7 +110,7 @@ window.GymModule={mount:function(root,opts){
           if(u==='kg') h+=stepper(key,'kg','Kg',dr.kg,'decimal');
           h+=stepper(key,'reps',u==='s'?'Segundos':'Reps',dr.reps,'numeric');
           h+='</div>';
-          if(u==='kg') h+='<div class="rir"><span>RIR</span>'+['0','1','2','3','4+'].map(function(r){return '<button data-rir="'+key+'|'+r+'" class="'+(dr.rir===r?'on':'')+'">'+r+'</button>';}).join('')+'</div>';
+          if(u!=='s') h+='<div class="rir'+(dr.rir?'':' req')+'"><span>RIR (obligatorio)</span>'+['0','1','2','3','4+'].map(function(r){return '<button data-rir="'+key+'|'+r+'" class="'+(dr.rir===r?'on':'')+'">'+r+'</button>';}).join('')+'</div>';
           h+='<button class="btn full" data-add="'+i+'">Añadir serie '+(ser.length+1)+'</button>';
           h+='</div>';
         }
@@ -384,6 +384,7 @@ window.GymModule={mount:function(root,opts){
       var g=function(fld){ var el=view.querySelector('[data-k="'+kk+'|'+fld+'"]'); return el?el.value:''; };
       var reps=num(g('reps')), kg=u==='kg'?num(g('kg')):0, rir=(drafts[kk]||{}).rir||null;
       if(reps==null||(u==='kg'&&kg==null)){ toast(u==='kg'?'Pon kg y reps.':'Pon '+(u==='s'?'segundos':'reps')+'.'); return; }
+      if(u!=='s'&&!rir){ toast('Marca el RIR de la serie. Sin RIR no se registra.'); var rb=view.querySelector('[data-rir^="'+kk+'|"]'); if(rb&&rb.parentNode){ rb.parentNode.classList.add('req','shake'); setTimeout(function(){ rb.parentNode.classList.remove('shake'); },500); } return; }
       var ex=JSON.parse(JSON.stringify(s.ejercicios)); ex[i].series=(ex[i].series||[]).concat([{kg:kg,reps:reps,rir:rir}]);
       s.ejercicios=ex; drafts[kk]={kg:u==='kg'?fk(kg):'',reps:String(reps),rir:''};
       var full=ex[i].series.length>=(ex[i].sets||3); delete openEx[s.id];
