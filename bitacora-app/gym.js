@@ -13,6 +13,7 @@ window.GymModule={mount:function(root,opts){
   var restEl=fx.querySelector('.rest'), toastEl=fx.querySelector('.toast');
   var db=null, data=[], tab='hoy', selId=null, cicloSel=null, exSel=null;
   var drafts={}, chains={}, openEx={}, moving=false;
+  var RETO_ID='reto-flexiones', RETO_META=100, reto=null, retoVal=null, retoOtra=false;
   var calY, calM, calDay=null, addTipo=null;
   var restDur=90, rest=null, restTimer=null, wakeLock=null, wakeOn=false;
   var view=root.querySelector('.g-view');
@@ -80,8 +81,9 @@ window.GymModule={mount:function(root,opts){
 
   function renderHoy(){
     var s=focusSession();
-    if(!s){ view.innerHTML='<div class="empty">No hay sesiones. Pide un plan por chat.</div>'; return; }
-    var h='';
+    if(!s){ view.innerHTML=retoCard()+'<div class="empty">No hay sesiones. Pide un plan por chat.</div>'; return; }
+    var h='', rDone=retoWeek().length>0;
+    if(!rDone) h+=retoCard();
     var same=sorted().filter(function(d){ return d.fecha===s.fecha; });
     if(same.length>1){
       h+='<div class="day-chips">'+same.map(function(d){ return '<button data-sel="'+d.id+'" class="'+(d.id===s.id?'on':'')+'">'+esc(d.titulo)+(d.hecho?' ✓':'')+'</button>'; }).join('')+'</div>';
@@ -144,12 +146,60 @@ window.GymModule={mount:function(root,opts){
       pend.concat(up).forEach(function(d){ h+='<div class="nx" role="button" tabindex="0" data-sel="'+d.id+'"><span><span class="dot" style="background:'+COL[d.tipo||'fuerza']+'"></span>'+esc(d.titulo)+(d.fecha<td?'<span class="miss">sin hacer</span>':'')+'</span><span class="d">'+esc(fmtDate(d.fecha))+'</span></div>'; });
       h+='</div>';
     }
+    if(rDone) h+=retoCard();
     if(selId) h+='<p><button class="btn ghost" data-sel="">Volver a hoy</button></p>';
     view.innerHTML=h;
   }
   function stepper(key,f,label,val,mode){
     var id='st-'+key.replace(/[^a-z0-9]/gi,'_')+'-'+f;
     return '<div class="step"><label for="'+id+'">'+label+'</label><div class="stepper"><button data-step="'+key+'|'+f+'|-1" aria-label="Menos">−</button><input id="'+id+'" data-k="'+key+'|'+f+'" inputmode="'+mode+'" value="'+esc(val)+'"><button data-step="'+key+'|'+f+'|1" aria-label="Más">+</button></div></div>';
+  }
+
+  // ---------- RETO 100 FLEXIONES ----------
+  function isoWeek(d){ var t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())), dn=t.getUTCDay()||7; t.setUTCDate(t.getUTCDate()+4-dn); var y0=new Date(Date.UTC(t.getUTCFullYear(),0,1)); return t.getUTCFullYear()+'-W'+('0'+Math.ceil(((t-y0)/864e5+1)/7)).slice(-2); }
+  function retoRegs(){ return ((reto&&reto.registros)||[]).slice().sort(function(a,b){ return a.fecha<b.fecha?-1:a.fecha>b.fecha?1:0; }); }
+  function retoWeek(){ var w=isoWeek(new Date()); return retoRegs().filter(function(r){ return r.semana===w; }); }
+  function retoBest(){ return retoRegs().reduce(function(m,r){ return Math.max(m,r.reps||0); },0); }
+  function retoWeekly(){ var by={}, order=[]; retoRegs().forEach(function(r){ if(by[r.semana]==null){ by[r.semana]={semana:r.semana,fecha:r.fecha,reps:0}; order.push(r.semana); } by[r.semana].reps=Math.max(by[r.semana].reps,r.reps||0); }); return order.map(function(k){ return by[k]; }); }
+  function retoProj(){
+    var w=retoWeekly(); if(w.length<3) return null;
+    var x0=pd(w[0].fecha), xs=w.map(function(r){ return (pd(r.fecha)-x0)/6048e5; }), ys=w.map(function(r){ return r.reps; });
+    var n=xs.length, mx=xs.reduce(function(a,b){return a+b;},0)/n, my=ys.reduce(function(a,b){return a+b;},0)/n, num_=0, den=0;
+    for(var i=0;i<n;i++){ num_+=(xs[i]-mx)*(ys[i]-my); den+=(xs[i]-mx)*(xs[i]-mx); }
+    if(!den) return null; var sl=num_/den; if(sl<=0) return {slope:sl};
+    var best=retoBest(); if(best>=RETO_META) return {slope:sl};
+    var wks=Math.ceil((RETO_META-best)/sl), d=new Date(); d.setDate(d.getDate()+wks*7);
+    return {slope:sl, weeks:wks, date:iso(d)};
+  }
+  function retoCard(){
+    var regs=retoRegs(), wk=retoWeek(), best=retoBest(), last=regs.length?regs[regs.length-1].reps:'';
+    var pct=Math.min(100,best/RETO_META*100), done=wk.length>0;
+    var h='<div class="card reto'+(done?' ok':' pend')+'"><div class="reto-h"><h3>Reto semanal · '+RETO_META+' flexiones seguidas</h3><span class="reto-st">'+(done?'Hecho esta semana':'Pendiente esta semana')+'</span></div>';
+    h+='<div class="reto-bar"><i style="width:'+pct+'%"></i></div>';
+    h+='<div class="kv"><span>Récord <b>'+best+'</b></span><span>Faltan <b>'+Math.max(0,RETO_META-best)+'</b></span>'+(done?'<span>Esta semana <b>'+wk.map(function(r){return r.reps;}).join(' · ')+'</b></span>':'');
+    var pj=retoProj();
+    if(best>=RETO_META) h+='<span><b>¡Reto conseguido!</b></span>';
+    else if(pj&&pj.weeks) h+='<span>Ritmo <b>+'+fk(pj.slope)+'/sem</b></span><span>100 hacia el <b>'+short(pj.date)+'</b></span>';
+    h+='</div>';
+    if(!done||retoOtra){
+      var v=retoVal!=null?retoVal:(last===''?'':String(last));
+      h+='<div class="reto-in"><div class="stepper"><button data-retostep="-1" aria-label="Menos">−</button><input id="retoin" inputmode="numeric" value="'+esc(v)+'" aria-label="Flexiones seguidas"><button data-retostep="1" aria-label="Más">+</button></div><button class="btn" data-retosave="1">Guardar</button></div>';
+      h+='<div class="kv" style="margin-top:6px">Una serie al fallo, técnica limpia. Apunta las que salgan seguidas.</div>';
+    } else h+='<button class="btn ghost full" data-retootra="1" style="min-height:40px">Registrar otro intento</button>';
+    return h+'</div>';
+  }
+  function retoSave(){
+    var el=document.getElementById('retoin'), n=Math.round(num(el?el.value:'')||0);
+    if(n<1){ toast('Pon cuántas flexiones hiciste.'); return; }
+    if(!db){ toast('Sin conexión al almacén. Reintenta en unos segundos.'); return; }
+    var prev=retoBest(), regs=retoRegs().concat([{semana:isoWeek(new Date()),fecha:todayISO(),reps:n}]);
+    reto=Object.assign({},reto||{},{id:RETO_ID,tipo:'reto',nombre:RETO_META+' flexiones seguidas',meta:RETO_META,registros:regs});
+    var doc={tipo:'reto',nombre:reto.nombre,meta:RETO_META,registros:regs, extra:true, fecha:'2000-01-01', semana:0};
+    var p=(chains[RETO_ID]||Promise.resolve()).then(function(){ return db.collection(COLL).doc(RETO_ID).set(doc); })
+      .catch(function(err){ console.error(err); toast('No se guardó el reto. Revisa la conexión.'); });
+    chains[RETO_ID]=p; retoVal=null; retoOtra=false;
+    toast(n>=RETO_META?'¡100 flexiones! Reto conseguido':(n>prev&&prev>0?'¡Nuevo récord: '+n+'!':'Guardado: '+n+' flexiones'));
+    render();
   }
 
   // ---------- CALENDARIO ----------
@@ -267,6 +317,10 @@ window.GymModule={mount:function(root,opts){
       h+='<div class="chart">'+chart(pts,{title:'Carga máxima',c:'var(--strength)',fmt:function(v){return fk(v)+'kg';},b:true,bl:'vol.'})+'</div>';
       if(best) h+='<div class="kv"><span>Mejor serie <b>'+fk(best.s.kg)+'×'+best.s.reps+'</b> ('+short(best.f)+')</span><span>1RM est. <b>'+fk(best.e1)+' kg</b></span><span>Sesiones <b>'+pts.length+'</b></span></div>';
     } else h+='<div class="empty">Sin series registradas.</div>';
+    h+='</div>';
+    var rw=retoWeekly();
+    h+='<div class="card"><h3>Reto · flexiones seguidas (mejor de cada semana)</h3><div class="chart">'+chart(rw.map(function(r){ return {x:short(r.fecha),v:r.reps}; }),{title:'Flexiones seguidas',c:'var(--strength)',fmt:function(v){return String(Math.round(v));}})+'</div>';
+    if(rw.length) h+='<div class="kv"><span>Récord <b>'+retoBest()+'</b></span><span>Meta <b>'+RETO_META+'</b></span><span>Semanas <b>'+rw.length+'</b></span></div>';
     h+='</div>';
     var runs=all.filter(function(d){return d.tipo==='running'&&d.km_real;});
     var isSeries=function(d){ return !d.extra && /series|interval/i.test((d.titulo||'')+' '+(d.foco||'')); };
@@ -404,8 +458,10 @@ window.GymModule={mount:function(root,opts){
     var n=t.getAttribute('data-nota'); if(n){ var s=byId(n); if(s) s.nota=t.value; save(n,{nota:t.value}).then(function(){ toast('Nota guardada'); }); return; }
     var c=t.getAttribute('data-chk'); if(c){ var s2=byId(c); if(s2) s2.hecho=t.checked; save(c,{hecho:t.checked}); render(); }
   });
+  view.addEventListener('input',function(ev){ if(ev.target.id==='retoin') retoVal=ev.target.value; });
   view.addEventListener('keydown',function(ev){
     if((ev.key==='Enter'||ev.key===' ') && ev.target.matches('[role=button]')){ ev.preventDefault(); ev.target.click(); return; }
+    if(ev.key==='Enter'&&ev.target.id==='retoin'){ retoSave(); return; }
     if(ev.key!=='Enter') return; var k=ev.target.getAttribute('data-k'); if(!k||k.indexOf('|run|')>0) return;
     var b=view.querySelector('[data-add="'+k.split('|')[1]+'"]'); if(b) b.click();
   });
@@ -420,6 +476,9 @@ window.GymModule={mount:function(root,opts){
     if(b.hasAttribute('data-addcancel')){ addTipo=null; render(); return; }
     if(b.hasAttribute('data-addsave')){ addExtra(); return; }
     if(b.hasAttribute('data-rest')){ restDur=+b.getAttribute('data-rest'); try{ localStorage.setItem(LS+'restDur',restDur); }catch(e){} render(); return; }
+    if(b.hasAttribute('data-retostep')){ var ri=document.getElementById('retoin'), rv=Math.max(0,Math.round((num(ri?ri.value:'')||0)+(+b.getAttribute('data-retostep')))); retoVal=String(rv); if(ri) ri.value=retoVal; return; }
+    if(b.hasAttribute('data-retosave')){ retoSave(); return; }
+    if(b.hasAttribute('data-retootra')){ retoOtra=true; render(); return; }
     var s=focusSession(); if(!s) return;
     if(b.hasAttribute('data-move')){ moving=!moving; render(); return; }
     if(b.hasAttribute('data-movesave')){ var nd=document.getElementById('movedate').value; if(nd){ s.fecha=nd; save(s.id,{fecha:nd}).then(function(){ toast('Sesión movida al '+short(nd)); }); selId=s.id; } moving=false; render(); return; }
@@ -465,8 +524,9 @@ window.GymModule={mount:function(root,opts){
     db=ns;
     var lastK='';
     db.collection(COLL).onSnapshot(function(snap){
-      var nd=snap.docs.map(function(d){ var v=Object.assign({},d.data()||{}); v.id=d.id; return v; }), k=JSON.stringify(nd);
-      if(k===lastK) return; lastK=k; data=nd;
+      var all=snap.docs.map(function(d){ var v=Object.assign({},d.data()||{}); v.id=d.id; return v; }), k=JSON.stringify(all);
+      if(k===lastK) return; lastK=k;
+      reto=null; var nd=all.filter(function(d){ if(d.id===RETO_ID){ reto=d; return false; } return true; }); data=nd;
       render();
       if(opts.onData) try{ opts.onData(data.slice()); }catch(e){ console.error(e); }
     },function(err){ console.error('db error',err); toast('Error leyendo el plan. Recarga.'); });

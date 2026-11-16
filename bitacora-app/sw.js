@@ -1,5 +1,5 @@
 /* Service worker: la app abre sin conexión. Los datos van aparte (db.js guarda copia local). */
-var CACHE = 'bitacora-v3';
+var CACHE = 'bitacora-v4';
 var SHELL = ['./', 'index.html', 'db.js', 'gym.js', 'gym.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {

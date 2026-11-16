@@ -186,3 +186,14 @@
 .gym .hold-act .btn{min-height:46px}
 .gym .hold .btn:not(.sec){background:var(--surface);color:var(--ink)}
 .gym .btn.hold-go{background:var(--strength);color:var(--on-strong)}
+
+.gym .reto .reto-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gym .reto .reto-h h3{margin:0}
+.gym .reto-st{font-size:.75rem;font-weight:600;color:var(--strength)}
+.gym .reto.ok .reto-st{color:var(--done)}
+.gym .reto.pend{border-color:var(--strength)}
+.gym .reto-bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin:10px 0 2px}
+.gym .reto-bar i{display:block;height:100%;background:var(--strength);border-radius:4px}
+.gym .reto.ok .reto-bar i{background:var(--done)}
+.gym .reto-in{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.gym .reto-in .btn{min-height:50px}
