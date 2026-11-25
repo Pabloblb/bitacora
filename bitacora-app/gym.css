@@ -208,3 +208,12 @@
 .gym .aj-tag.repetir{background:var(--strength-soft);color:var(--strength)}
 .gym details.orig{margin-top:8px;font-size:.8rem;color:var(--ink-muted)}
 .gym details.orig summary{cursor:pointer}
+/* Calentamiento */
+.gym .calent summary{cursor:pointer;list-style:none}
+.gym .calent summary::-webkit-details-marker{display:none}
+.gym .cal-list{list-style:none;margin:10px 0 0;padding:0}
+.gym .cal-list li{border-top:1px solid var(--border);padding:8px 0;font-size:.86rem;line-height:1.35}
+.gym .cal-list li:first-child{border-top:0}
+.gym .cal-list label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.gym .cal-list input{width:20px;height:20px;flex-shrink:0;margin:0;accent-color:var(--done)}
+.gym .cal-list li.ok span{text-decoration:line-through;color:var(--ink-muted)}

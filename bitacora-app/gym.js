@@ -166,6 +166,10 @@ window.GymModule={mount:function(root,opts){
     var aj=ajuste(s);
     h+=ajBanner(aj);
 
+    if(s.calentamiento && s.calentamiento.length){
+      var cdone=s.cal_hecho||[];
+      h+='<details class="card calent"'+(cdone.length>=s.calentamiento.length||s.hecho?'':' open')+'><summary><h3 style="display:inline">Calentamiento · '+cdone.length+'/'+s.calentamiento.length+'</h3></summary><ul class="cal-list">'+s.calentamiento.map(function(c,j){ var ok=cdone.indexOf(j)>=0; return '<li class="'+(ok?'ok':'')+'"><label><input type="checkbox" data-calchk="'+s.id+'|'+j+'"'+(ok?' checked':'')+'><span>'+esc(c)+'</span></label></li>'; }).join('')+'</ul></details>';
+    }
     if(s.ejercicios && s.ejercicios.length){
       var ci=curIdx(s), ex=s.ejercicios;
       h+='<div class="tools"><span class="seg-l">Descanso</span><div class="seg">'+[60,90,120,180].map(function(v){return '<button data-rest="'+v+'" class="'+(v===restDur?'on':'')+'">'+(v<120?v+'s':(v/60)+'m')+'</button>';}).join('')+'</div></div>';
@@ -534,6 +538,7 @@ window.GymModule={mount:function(root,opts){
     var t=ev.target;
     if(t.id==='exsel'){ exSel=t.value; render(); return; }
     var n=t.getAttribute('data-nota'); if(n){ var s=byId(n); if(s) s.nota=t.value; save(n,{nota:t.value}).then(function(){ toast('Nota guardada'); }); return; }
+    var cc=t.getAttribute('data-calchk'); if(cc){ var q=cc.split('|'), s3=byId(q[0]); if(!s3) return; var arr=(s3.cal_hecho||[]).filter(function(x){ return x!==+q[1]; }); if(t.checked) arr.push(+q[1]); s3.cal_hecho=arr; save(s3.id,{cal_hecho:arr}); render(); return; }
     var c=t.getAttribute('data-chk'); if(c){ var s2=byId(c); if(s2) s2.hecho=t.checked; save(c,{hecho:t.checked}); render(); }
   });
   view.addEventListener('input',function(ev){ if(ev.target.id==='retoin') retoVal=ev.target.value; });
