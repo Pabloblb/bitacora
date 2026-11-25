@@ -88,7 +88,10 @@ window.GymModule={mount:function(root,opts){
   }
   function prevDone(s){
     var k=kindKey(s), r=null;
-    planSessions().forEach(function(d){ if(d.id!==s.id&&d.hecho&&kindKey(d)===k&&d.fecha<=s.fecha&&(!r||d.fecha>r.fecha||(d.fecha===r.fecha&&(d.orden||0)>(r.orden||0)))) r=d; });
+    // cuenta también salidas extra de running (una tirada libre vale como tirada)
+    sorted().forEach(function(d){ var ok=!isExtra(d)||(d.tipo==='running'&&d.km_real&&d.id!==RETO_ID);
+      if(ok&&d.id!==s.id&&d.hecho&&kindKey(d)===k&&d.fecha<=s.fecha&&(!r||d.fecha>r.fecha||(d.fecha===r.fecha&&(d.orden||0)>(r.orden||0)))) r=d; });
+    if(r&&isExtra(r)) r=Object.assign({},r,{aj_obj:{km:r.km_real,contenido:(s.contenido||[]).map(function(x,i){ return i===0?String(x).replace(/^\d+(?:[.,]\d+)?\s*km/,fk(r.km_real)+'km'):x; })}});
     return r;
   }
   function baseObj(d){ return d.aj_obj||{km:d.km,contenido:d.contenido||[]}; }
@@ -197,7 +200,7 @@ window.GymModule={mount:function(root,opts){
       h+='<button class="btn full done" data-done="'+s.id+'">'+(s.hecho?'Marcar como no hecha':'Terminar sesión')+'</button>';
     } else if(s.tipo==='running'){
       var ro=s.hecho?baseObj(s):runObj(s), cambiado=aj&&aj.obj;
-      h+='<div class="now run" style="margin-top:12px"><div class="a">'+esc(s.foco||'')+'</div><div class="b">Plan: '+(ro.km||'–')+' km'+(cambiado&&ro.km!==s.km?' (original '+(s.km||'–')+' km)':'')+'</div></div>';
+      h+='<div class="now run" style="margin-top:12px"><div class="a">'+esc(s.foco||'')+'</div><div class="b">Plan: '+(ro.km?fk(ro.km):'–')+' km'+(cambiado&&ro.km!==s.km?' (original '+(s.km||'–')+' km)':'')+'</div></div>';
       h+='<div class="card"><ul class="contenido">'+(ro.contenido||[]).map(function(c){return '<li>'+esc(c)+'</li>';}).join('')+'</ul>'+(cambiado?'<details class="orig"><summary>Plan original</summary><ul class="contenido">'+(s.contenido||[]).map(function(c){return '<li>'+esc(c)+'</li>';}).join('')+'</ul></details>':'')+'</div>';
       var dk=drafts[s.id+'|run']||{}, sTot=runKind(s)==='series'?seriesTot(ro.contenido):null;
       var kmv=dk.km!=null?dk.km:(s.km_real!=null?fk(s.km_real):''), tv=dk.t!=null?dk.t:(s.tiempo?mmss(s.tiempo):''), shv=dk.sh!=null?dk.sh:(s.series_hechas!=null?fk(s.series_hechas):'');
