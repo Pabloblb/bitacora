@@ -197,3 +197,14 @@
 .gym .reto.ok .reto-bar i{background:var(--done)}
 .gym .reto-in{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 .gym .reto-in .btn{min-height:50px}
+/* Ajuste automático de objetivos */
+.gym .aj{display:flex;flex-direction:column;gap:2px;margin:10px 0 2px;padding:10px 12px;border-radius:12px;border-left:4px solid var(--accent);background:var(--accent-soft);font-size:.82rem;line-height:1.35}
+.gym .aj b{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
+.gym .aj.repetir{border-left-color:var(--strength);background:var(--strength-soft)}
+.gym .aj.repetir b{color:var(--strength)}
+.gym .ej-aj{display:block;font-size:.76rem;font-weight:600;color:var(--strength);margin-top:2px}
+.gym .ej-aj small{font-weight:400;color:var(--ink-muted)}
+.gym .aj-tag{margin-left:8px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);vertical-align:middle}
+.gym .aj-tag.repetir{background:var(--strength-soft);color:var(--strength)}
+.gym details.orig{margin-top:8px;font-size:.8rem;color:var(--ink-muted)}
+.gym details.orig summary{cursor:pointer}
