@@ -1,0 +1,6 @@
+{
+  "name": "bitacora",
+  "private": true,
+  "scripts": { "test": "node tests/smoke.js" },
+  "devDependencies": { "jsdom": "^24.0.0" }
+}
