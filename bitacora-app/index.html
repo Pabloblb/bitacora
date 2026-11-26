@@ -268,7 +268,7 @@
   var db=null, items=[], apps=[], fmva=[], refuerzos=[], gym=[], code=[];
     var loaded={items:false,apps:false,fmva:false,gym:false};
   var tab='hoy', openLate=false, confirmLate=false, openFday={}, gymApi=null, gymMounted=false;
-  // Al abrir, siempre en Hoy (empieza por la Agenda de hoy)
+  // Al abrir, siempre en Hoy (Esta semana + Agenda de hoy)
 
   /* ---------- utilidades ---------- */
   function $(id){ return document.getElementById(id); }
@@ -490,19 +490,6 @@
   /* ---------- render: HOY ---------- */
   function renderHoy(){
     var t=today(), mon=monday(t), h='';
-    // Agenda de hoy + foco (lo primero al abrir)
-    var evHoy=expandir(activeItems().filter(function(i){return i.tipo==='evento';})).filter(function(i){return i.fecha===t;}).sort(function(a,b){return (a.hora||'99').localeCompare(b.hora||'99');});
-    var foco=activeItems().filter(function(i){return i.tipo==='tarea' && (i.foco || i.fecha===t);}).sort(function(a,b){ return (a.estado==='hecho')-(b.estado==='hecho'); });
-    h+='<div class="sec"><div class="sec-h"><h2>Agenda de hoy</h2><button type="button" class="lk" data-goto="agenda">Ver todo</button></div><div class="panel">';
-    h+='<form class="qa" id="qa-hoy"><input type="text" id="qa-hoy-t" class="fld" placeholder="Añadir para hoy. Ej: 18:00 Llamar a Marina" aria-label="Añadir para hoy" autocomplete="off"><button type="submit" class="b-btn">Añadir</button></form>';
-    h+='<div class="hint">Si empieza por una hora (18:00) va a la agenda; si no, a tus tareas de foco.</div>';
-    var list=evHoy.concat(foco);
-    if(!loaded.items) h+='<div class="muted small" style="margin-top:10px">Cargando…</div>';
-    else if(list.length) h+='<div style="margin-top:8px">'+list.map(function(i){return itemRow(i);}).join('')+'</div>';
-    else h+='<div class="muted small" style="margin-top:10px">Nada fijado. Marca con ☆ hasta 3 tareas en Agenda para tenerlas aquí.</div>';
-    h+='</div></div>';
-
-    var ready=loaded.items&&loaded.fmva&&loaded.gym;
     // Semana
     var gp=gymPlan(), fs=fSorted(), ev=expandir(activeItems().filter(function(i){return i.repite==='semanal';}));
     var gW=gp.filter(function(d){return d.fecha>=mon&&d.fecha<=addDays(mon,6);}), fW=fs.filter(function(d){return d.fecha>=mon&&d.fecha<=addDays(mon,6);});
@@ -526,6 +513,19 @@
     h+='<div class="wsum"><span>Entreno <b>'+gHechas+'/'+gW.length+'</b>'+(extrasW?' + '+extrasW+' extra':'')+'</span><span>FMVA <b>'+fHechos+'/'+fW.length+'</b> días</span>'+AREAS.map(function(A){ return '<span>'+A.l+' <b>'+fh(codeMin(codeWeek(mon,A.k))/60)+'/'+fh(A.obj/60)+'</b></span>'; }).join('')+'<span>Agenda <b>'+tHechas+'</b> hechas</span></div>';
     h+='<div class="legend"><span><i class="dot on" style="--c:var(--accent)"></i>Fuerza</span><span><i class="dot on" style="--c:var(--run)"></i>Running</span><span><i class="dot on" style="--c:var(--teal);border-radius:3px"></i>FMVA</span><span><i class="dot on" style="--c:var(--code);transform:rotate(45deg);border-radius:2px"></i>CODE</span><span><i class="dot on" style="--c:var(--ia);transform:rotate(45deg);border-radius:2px"></i>IA</span><span>Relleno = hecho · discontinuo = sin hacer</span></div></div>';
 
+    // Agenda de hoy + foco (justo debajo de Esta semana)
+    var evHoy=expandir(activeItems().filter(function(i){return i.tipo==='evento';})).filter(function(i){return i.fecha===t;}).sort(function(a,b){return (a.hora||'99').localeCompare(b.hora||'99');});
+    var foco=activeItems().filter(function(i){return i.tipo==='tarea' && (i.foco || i.fecha===t);}).sort(function(a,b){ return (a.estado==='hecho')-(b.estado==='hecho'); });
+    h+='<div class="sec"><div class="sec-h"><h2>Agenda de hoy</h2><button type="button" class="lk" data-goto="agenda">Ver todo</button></div><div class="panel">';
+    h+='<form class="qa" id="qa-hoy"><input type="text" id="qa-hoy-t" class="fld" placeholder="Añadir para hoy. Ej: 18:00 Llamar a Marina" aria-label="Añadir para hoy" autocomplete="off"><button type="submit" class="b-btn">Añadir</button></form>';
+    h+='<div class="hint">Si empieza por una hora (18:00) va a la agenda; si no, a tus tareas de foco.</div>';
+    var list=evHoy.concat(foco);
+    if(!loaded.items) h+='<div class="muted small" style="margin-top:10px">Cargando…</div>';
+    else if(list.length) h+='<div style="margin-top:8px">'+list.map(function(i){return itemRow(i);}).join('')+'</div>';
+    else h+='<div class="muted small" style="margin-top:10px">Nada fijado. Marca con ☆ hasta 3 tareas en Agenda para tenerlas aquí.</div>';
+    h+='</div></div>';
+
+    var ready=loaded.items&&loaded.fmva&&loaded.gym;
     if(!ready){ h+='<div class="empty">Cargando tu día…</div>'; $('v-hoy').innerHTML=h; return; }
 
     h+='<div class="sec"><div class="sec-h"><h2>Plan de hoy</h2><span class="r">'+esc(fmt(t,{weekday:'long',day:'numeric',month:'long'}))+'</span></div>';

@@ -35,7 +35,7 @@ Mantén el JSON completo de la fila; la API sustituye la celda entera.
 
 - `db.js`: imita la API de base de datos de los artifacts (`collection/doc/set/update/onSnapshot`) sobre el Apps Script. Caché local + cola offline.
 - `gym.js`: módulo Gym (Hoy, Calendario, Plan, Progreso, reto, timer de isométricos, calentamiento).
-- `index.html`: resto de la Bitácora (Hoy, Agenda, FMVA, Candidaturas). Monta `gym.js`. Al abrir siempre va a Hoy, que empieza por "Agenda de hoy".
+- `index.html`: resto de la Bitácora (Hoy, Agenda, FMVA, Candidaturas). Monta `gym.js`. Al abrir siempre va a Hoy: "Esta semana" y justo debajo "Agenda de hoy".
 - `sw.js`: service worker. **Sube `CACHE` (bitacora-vN) en cada cambio** de JS/CSS/HTML para que el móvil coja la versión nueva.
 - JS en ES5 (sin build, sin dependencias). Español de España en toda la UI.
 
@@ -52,7 +52,8 @@ Las salidas extra de running cuentan como última tirada/series. El plan origina
 
 - `Código`: API web (`doGet` lee todo, `doPost` aplica ops `set|update|delete`). Token en Script Properties.
 - `Avisos`: `avCheck` cada 5 min → resumen del día a las 08:00, aviso 30 min antes de cada evento/sesión con `hora`, recordatorio del reto los domingos a las 19:00.
-- `PrepararManana.js` (en el repo): `avPrepararManana()` manda a las 21:00 el resumen de mañana (eventos, entreno, FMVA, tareas). Se llama desde `avCheck`; no repite gracias a `PM_ENVIADO` en Script Properties.
+  - 4) a las 21:00 (`AV_CFG.PREP`) manda "Prepara mañana" con `avManana_()`: eventos, entreno, FMVA y tareas de mañana + atrasadas. Prueba manual: `avPrepTest`. Copia en `apps-script/PrepararManana.js` (sin token).
+- El código de `Avisos` lleva el token de Telegram en `AV_CFG`: **no lo subas al repo** tal cual.
 
 Se sincroniza con `clasp` (ver `apps-script/README.md`). Tras cambiar `Código` hay que crear nueva versión del despliegue web; `Avisos` no lo necesita.
 
