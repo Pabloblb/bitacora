@@ -12,7 +12,8 @@ Pablo pide los cambios en lenguaje natural; se implementan aquí y se publican c
 | API + avisos | Apps Script **"Bitacora API"** `1i68hUvndYPJe4MY0ujsTTF-cWIxTkWylhlKFFyu5iQPmwqymVt7v7EoW` (código en `apps-script/`, ver abajo) |
 | Notificaciones | Bot de Telegram `bitacorablb_pablo_bot`, enviadas desde `Avisos` del Apps Script |
 
-**Obsoletos, no tocar:** los artifacts de claude.ai "Bitácora Pablo" y "Plan Gym + Running" (dejaron de usarse el 12/11/2026). Sus datos están congelados en ciclo 2.
+**Retirados (26/11/2026):** los artifacts de claude.ai "Bitácora Pablo" (`2p2eHCENemC6fvNt737413`) y "Plan Gym + Running" (`7edk37igdfqxD31BD8iTr7`) ya solo muestran un aviso con enlace a la app. Dejaron de usarse el 12/11/2026; sus datos están congelados en ciclo 2.
+**Nunca leas ni escribas datos en ellos** (ni con las herramientas de base de datos de artifacts): todo cambio de datos va a la Google Sheet. Última versión con la app antigua, por si hiciera falta recuperarla: Bitácora `1792433884-a96c`, Gym `1792431202-d481`.
 
 ## Datos (Google Sheet)
 
