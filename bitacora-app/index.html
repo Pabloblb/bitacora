@@ -268,7 +268,7 @@
   var db=null, items=[], apps=[], fmva=[], refuerzos=[], gym=[], code=[];
     var loaded={items:false,apps:false,fmva:false,gym:false};
   var tab='hoy', openLate=false, confirmLate=false, openFday={}, gymApi=null, gymMounted=false;
-  try{ var t0=localStorage.getItem('bit.tab'); if(t0) tab=t0; }catch(e){}
+  // Al abrir, siempre en Hoy (empieza por la Agenda de hoy)
 
   /* ---------- utilidades ---------- */
   function $(id){ return document.getElementById(id); }
@@ -490,6 +490,18 @@
   /* ---------- render: HOY ---------- */
   function renderHoy(){
     var t=today(), mon=monday(t), h='';
+    // Agenda de hoy + foco (lo primero al abrir)
+    var evHoy=expandir(activeItems().filter(function(i){return i.tipo==='evento';})).filter(function(i){return i.fecha===t;}).sort(function(a,b){return (a.hora||'99').localeCompare(b.hora||'99');});
+    var foco=activeItems().filter(function(i){return i.tipo==='tarea' && (i.foco || i.fecha===t);}).sort(function(a,b){ return (a.estado==='hecho')-(b.estado==='hecho'); });
+    h+='<div class="sec"><div class="sec-h"><h2>Agenda de hoy</h2><button type="button" class="lk" data-goto="agenda">Ver todo</button></div><div class="panel">';
+    h+='<form class="qa" id="qa-hoy"><input type="text" id="qa-hoy-t" class="fld" placeholder="Añadir para hoy. Ej: 18:00 Llamar a Marina" aria-label="Añadir para hoy" autocomplete="off"><button type="submit" class="b-btn">Añadir</button></form>';
+    h+='<div class="hint">Si empieza por una hora (18:00) va a la agenda; si no, a tus tareas de foco.</div>';
+    var list=evHoy.concat(foco);
+    if(!loaded.items) h+='<div class="muted small" style="margin-top:10px">Cargando…</div>';
+    else if(list.length) h+='<div style="margin-top:8px">'+list.map(function(i){return itemRow(i);}).join('')+'</div>';
+    else h+='<div class="muted small" style="margin-top:10px">Nada fijado. Marca con ☆ hasta 3 tareas en Agenda para tenerlas aquí.</div>';
+    h+='</div></div>';
+
     var ready=loaded.items&&loaded.fmva&&loaded.gym;
     // Semana
     var gp=gymPlan(), fs=fSorted(), ev=expandir(activeItems().filter(function(i){return i.repite==='semanal';}));
@@ -553,17 +565,6 @@
     h+='</div>';
     AREAS.forEach(function(A){ h+=areaPanel(A,t,mon); });
     h+='</div>';
-
-    // Agenda de hoy + foco
-    var evHoy=expandir(activeItems().filter(function(i){return i.tipo==='evento';})).filter(function(i){return i.fecha===t;}).sort(function(a,b){return (a.hora||'99').localeCompare(b.hora||'99');});
-    var foco=activeItems().filter(function(i){return i.tipo==='tarea' && (i.foco || i.fecha===t);}).sort(function(a,b){ return (a.estado==='hecho')-(b.estado==='hecho'); });
-    h+='<div class="sec"><div class="sec-h"><h2>Agenda de hoy</h2><button type="button" class="lk" data-goto="agenda">Ver todo</button></div><div class="panel">';
-    h+='<form class="qa" id="qa-hoy"><input type="text" id="qa-hoy-t" class="fld" placeholder="Añadir para hoy. Ej: 18:00 Llamar a Marina" aria-label="Añadir para hoy" autocomplete="off"><button type="submit" class="b-btn">Añadir</button></form>';
-    h+='<div class="hint">Si empieza por una hora (18:00) va a la agenda; si no, a tus tareas de foco.</div>';
-    var list=evHoy.concat(foco);
-    if(list.length) h+='<div style="margin-top:8px">'+list.map(function(i){return itemRow(i);}).join('')+'</div>';
-    else h+='<div class="muted small" style="margin-top:10px">Nada fijado. Marca con ☆ hasta 3 tareas en Agenda para tenerlas aquí.</div>';
-    h+='</div></div>';
 
     // Atrasado
     var late=lateItems();
@@ -710,7 +711,7 @@
     if(fid && fid.indexOf('gym')!==0){ var el=$(fid); if(el && el!==ae){ if(val!=null && el.tagName==='INPUT' && el.type!=='checkbox') el.value=val; el.focus({preventScroll:true}); } }
   }
   function setTab(t){
-    tab=t; try{ localStorage.setItem('bit.tab',t); }catch(e){}
+    tab=t;
     ['hoy','agenda','fmva','gym','cand'].forEach(function(x){ $('v-'+x).hidden=(x!==t); });
     document.querySelectorAll('nav.tabs button').forEach(function(b){ var on=b.getAttribute('data-tab')===t; b.classList.toggle('on',on); b.setAttribute('aria-current',on?'page':'false'); });
     if(t==='gym') mountGym();
