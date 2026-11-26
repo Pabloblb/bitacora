@@ -1,5 +1,5 @@
 /* Service worker: la app abre sin conexión. Los datos van aparte (db.js guarda copia local). */
-var CACHE = 'bitacora-v7';
+var CACHE = 'bitacora-v8';
 var SHELL = ['./', 'index.html', 'db.js', 'gym.js', 'gym.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -18,7 +18,8 @@ self.addEventListener('fetch', function (e) {
   if (url.hostname.indexOf('script.google') >= 0 || url.hostname.indexOf('googleusercontent') >= 0) return; // API: siempre red
   if (url.origin === location.origin) {
     // red primero (para ver siempre la última versión), caché si no hay conexión
-    e.respondWith(fetch(e.request).then(function (r) {
+    // no-cache: revalida con GitHub Pages en vez de usar la copia HTTP de 10 min
+    e.respondWith(fetch(new Request(e.request.url, { cache: 'no-cache' })).then(function (r) {
       var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, cp); }); return r;
     }).catch(function () { return caches.match(e.request).then(function (m) { return m || caches.match('index.html'); }); }));
     return;
